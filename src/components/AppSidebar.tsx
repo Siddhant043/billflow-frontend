@@ -1,0 +1,121 @@
+import {
+  ChartPie,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+  Zap,
+} from "lucide-react";
+import {
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  Sidebar,
+  SidebarGroup,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "./ui/sidebar";
+import { Link } from "@tanstack/react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { useLocation } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+
+const sidebarItems = [
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    to: "/dashboard",
+  },
+  {
+    label: "Invoices",
+    icon: FileText,
+    to: "/dashboard/invoices",
+  },
+  {
+    label: "Clients",
+    icon: Users,
+    to: "/dashboard/clients",
+  },
+  {
+    label: "Payments",
+    icon: CreditCard,
+    to: "/dashboard/payments",
+  },
+  {
+    label: "Reports",
+    icon: ChartPie,
+    to: "/dashboard/reports",
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+    to: "/dashboard/settings",
+  },
+];
+
+const AppSidebar = () => {
+  const location = useLocation();
+  console.log(
+    location.pathname,
+    sidebarItems.map((item) => item.to)
+  );
+  return (
+    <Sidebar className="bg-sidebar">
+      <SidebarHeader className="p-4">
+        <Link to="/" className="inline-flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-white">
+            <Zap size={20} fill="currentColor" />
+          </div>
+          <span className="text-xl font-semibold tracking-tight">BillFlow</span>
+        </Link>
+      </SidebarHeader>
+      <SidebarContent className="p-2">
+        <SidebarGroup>
+          <SidebarMenu>
+            {sidebarItems.map((item) => (
+              <SidebarMenuItem
+                key={item.to}
+                className={cn(
+                  "p-2 text-muted-foreground hover:bg-primary-foreground hover:text-primary rounded-md",
+                  location.pathname === item.to &&
+                    "bg-primary-foreground text-primary"
+                )}
+              >
+                <Link to={item.to} className="flex items-center gap-2">
+                  <item.icon size={22} />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarSeparator className="mx-auto" />
+      <SidebarFooter className="p-4">
+        <SidebarMenu>
+          <SidebarMenuItem className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium">John Doe</span>
+              <span className="text-xs text-muted-foreground">
+                john.doe@example.com
+              </span>
+            </div>
+            <Button variant="ghost" size="icon">
+              <LogOut size={18} />
+            </Button>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
+
+export default AppSidebar;
