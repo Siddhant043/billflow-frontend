@@ -59,35 +59,31 @@ const sidebarItems = [
 
 const AppSidebar = () => {
   const location = useLocation();
-  console.log(
-    location.pathname,
-    sidebarItems.map((item) => item.to)
-  );
   return (
     <Sidebar className="bg-sidebar">
-      <SidebarHeader className="p-4">
-        <Link to="/" className="inline-flex items-center gap-2">
+      <SidebarHeader className="p-6">
+        <Link to="/" className="inline-flex items-center gap-3">
           <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-white">
             <Zap size={20} fill="currentColor" />
           </div>
-          <span className="text-xl font-semibold tracking-tight">BillFlow</span>
+          <span className="text-xl font-bold tracking-tight">BillFlow</span>
         </Link>
       </SidebarHeader>
-      <SidebarContent className="p-2">
+      <SidebarContent className="px-2">
         <SidebarGroup>
           <SidebarMenu>
             {sidebarItems.map((item) => (
               <SidebarMenuItem
                 key={item.to}
                 className={cn(
-                  "p-2 text-muted-foreground hover:bg-primary-foreground hover:text-primary rounded-md",
+                  "p-3 text-muted-foreground hover:bg-primary-foreground hover:text-primary rounded-md",
                   location.pathname === item.to &&
                     "bg-primary-foreground text-primary"
                 )}
               >
                 <Link to={item.to} className="flex items-center gap-2">
                   <item.icon size={22} />
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span className="text-md font-medium">{item.label}</span>
                 </Link>
               </SidebarMenuItem>
             ))}

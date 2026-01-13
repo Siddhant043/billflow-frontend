@@ -18,8 +18,8 @@ import ThemeToggle from "./ThemeToggle";
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   return (
-    <div className="flex items-center justify-between p-2 border-b w-full">
-      <InputGroup className="w-md">
+    <div className="flex items-center justify-between py-3 px-6 border-b w-full">
+      <InputGroup className="w-md bg-input/40">
         <InputGroupInput
           type="text"
           placeholder="Search for invoices, clients, etc."
