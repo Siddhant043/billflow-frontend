@@ -29,6 +29,22 @@ export interface Client {
   id: string;
   name: string;
   email: string;
+  logoUrl?: string;
   address: string;
-  avatar?: string;
+  company: string;
+  gstNumber: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  companyName: string;
+  isActive: boolean;
+  logoUrl: string;
+  createdAt: string;
 }

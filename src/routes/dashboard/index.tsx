@@ -20,7 +20,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import {
   AlertCircle,
   ArrowRight,
@@ -124,7 +129,6 @@ const chartConfig = {
 function RouteComponent() {
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState("6months");
-
   return (
     <div className="flex flex-col gap-4 px-6 py-6 md:px-10 overflow-y-auto">
       {/* Header */}

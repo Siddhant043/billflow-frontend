@@ -8,7 +8,12 @@ export const Route = createFileRoute("/")({
 function App() {
   const navigate = useNavigate();
   useEffect(() => {
-    navigate({ to: "/auth" });
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate({ to: "/dashboard" });
+    } else {
+      navigate({ to: "/auth" });
+    }
   }, []);
   return null;
 }

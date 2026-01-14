@@ -55,8 +55,8 @@ function RouteComponent() {
               {/* Avatar + menu */}
               <div className="flex justify-between items-start mb-6">
                 <Avatar className="size-14 rounded-2xl" size="lg">
-                  {client.avatar ? (
-                    <AvatarImage src={client.avatar} alt={client.name} />
+                  {client.logoUrl ? (
+                    <AvatarImage src={client.logoUrl} alt={client.name} />
                   ) : (
                     <AvatarFallback>
                       {client.name.charAt(0) ?? "C"}

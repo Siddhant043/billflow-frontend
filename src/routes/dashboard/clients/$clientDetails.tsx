@@ -95,9 +95,9 @@ function RouteComponent() {
           <Card className="rounded-2xl border border-border shadow-sm overflow-hidden">
             <CardContent className="px-6 py-2">
               <div className="mb-6">
-                <Avatar className="w-24 h-24 rounded-2xl border-4 border-background shadow-lg">
-                  {client.avatar ? (
-                    <AvatarImage src={client.avatar} alt={client.name} />
+                <Avatar className="w-24 h-24 rounded-full border-4 border-background shadow-lg">
+                  {client.logoUrl ? (
+                    <AvatarImage src={client.logoUrl} alt={client.name} />
                   ) : (
                     <AvatarFallback className="text-lg font-bold">
                       {client.name.charAt(0) ?? "C"}

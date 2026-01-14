@@ -19,21 +19,21 @@ export function TeamSettings() {
       email: "alex@billflow.io",
       role: "Owner",
       status: "Active",
-      avatar: "https://picsum.photos/seed/user/32/32",
+      logoUrl: "https://picsum.photos/seed/user/32/32",
     },
     {
       name: "Sarah Chen",
       email: "sarah@billflow.io",
       role: "Accountant",
       status: "Active",
-      avatar: "https://picsum.photos/seed/sarah/32/32",
+      logoUrl: "https://picsum.photos/seed/sarah/32/32",
     },
     {
       name: "Marcus Todd",
       email: "marcus@billflow.io",
       role: "Manager",
       status: "Pending",
-      avatar: "https://picsum.photos/seed/marcus/32/32",
+      logoUrl: "https://picsum.photos/seed/marcus/32/32",
     },
   ];
 
@@ -73,7 +73,7 @@ export function TeamSettings() {
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={member.avatar} alt={member.name} />
+                        <AvatarImage src={member.logoUrl} alt={member.name} />
                         <AvatarFallback>
                           {member.name
                             .split(" ")

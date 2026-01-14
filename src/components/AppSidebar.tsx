@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store";
 
 const sidebarItems = [
   {
@@ -59,6 +60,7 @@ const sidebarItems = [
 
 const AppSidebar = () => {
   const location = useLocation();
+  const { user, logout } = useUserStore();
   return (
     <Sidebar className="bg-sidebar">
       <SidebarHeader className="p-6">
@@ -95,16 +97,18 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage
+                src={user?.logoUrl || "https://github.com/shadcn.png"}
+              />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">John Doe</span>
+              <span className="text-sm font-medium ">{user?.fullName}</span>
               <span className="text-xs text-muted-foreground">
-                john.doe@example.com
+                {user?.email}
               </span>
             </div>
-            <Button variant="ghost" size="icon">
+            <Button onClick={logout} variant="ghost" size="icon">
               <LogOut size={18} />
             </Button>
           </SidebarMenuItem>

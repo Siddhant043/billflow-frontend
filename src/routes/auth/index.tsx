@@ -2,16 +2,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Field, FieldError } from "@/components/ui/field";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chromium, Eye, EyeOff, Zap } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import ThemeToggle from "@/components/ThemeToggle";
+import { login as loginApi } from "@/api/auth";
+import { register as registerApi } from "@/api/auth";
+import { useUserStore } from "@/store";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/")({
   component: RouteComponent,
+  beforeLoad: async () => {
+    const token = window.localStorage.getItem("token");
+    if (token) {
+      redirect({ to: "/dashboard" });
+    }
+  },
 });
 
 const loginSchema = z.object({
@@ -32,6 +48,8 @@ function RouteComponent() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { login, setUser } = useUserStore();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -60,12 +78,16 @@ function RouteComponent() {
   };
 
   const handleLoginSubmit = loginForm.handleSubmit(async (data) => {
+    console.log("Login data:", data);
     setIsLoading(true);
     try {
       // TODO: Implement actual authentication logic
       console.log("Login data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      const response = await loginApi(data);
+      login(response.accessToken);
+      navigate({ to: "/dashboard" });
     } catch (error) {
+      toast.error("Authentication error. Please try again.");
       console.error("Authentication error:", error);
     } finally {
       setIsLoading(false);
@@ -75,11 +97,13 @@ function RouteComponent() {
   const handleRegisterSubmit = registerForm.handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      // TODO: Implement actual authentication logic
-      console.log("Register data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      const response = await registerApi(data);
+      setUser(response.data);
+      toast.success("Account created successfully. Please login.");
+      navigate({ to: "/auth" });
     } catch (error) {
-      console.error("Authentication error:", error);
+      toast.error("Registration error. Please try again.");
+      console.error("Registration error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -153,74 +177,142 @@ function RouteComponent() {
               )}
             />
           )}
-          <Controller
-            control={registerForm.control}
-            name="email"
-            render={({ field }) => (
-              <Field>
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="alex@example.com"
-                  className="w-full"
-                  {...field}
-                />
-                <FieldError
-                  errors={
-                    registerForm.formState.errors.email
-                      ? [registerForm.formState.errors.email]
-                      : undefined
-                  }
-                />
-              </Field>
-            )}
-          />
+          {mode === "login" ? (
+            <>
+              <Controller
+                control={loginForm.control}
+                name="email"
+                render={({ field }) => (
+                  <Field>
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="alex@example.com"
+                      className="w-full"
+                      {...field}
+                    />
+                    <FieldError
+                      errors={
+                        loginForm.formState.errors.email
+                          ? [loginForm.formState.errors.email]
+                          : undefined
+                      }
+                    />
+                  </Field>
+                )}
+              />
 
-          <Controller
-            control={registerForm.control}
-            name="password"
-            render={({ field }) => (
-              <Field>
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="password">Password</Label>
-                  {mode === "login" && (
-                    <Button variant="link" asChild>
-                      <Link to="/auth">Forgot password?</Link>
-                    </Button>
-                  )}
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="w-full"
-                    {...field}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 size-8 rounded-full "
-                    variant="ghost"
-                  >
-                    {showPassword ? (
-                      <EyeOff size={20} color="black" />
-                    ) : (
-                      <Eye size={20} color="black" />
-                    )}
-                  </Button>
-                </div>
-                <FieldError
-                  errors={
-                    registerForm.formState.errors.password
-                      ? [registerForm.formState.errors.password]
-                      : undefined
-                  }
-                />
-              </Field>
-            )}
-          />
+              <Controller
+                control={loginForm.control}
+                name="password"
+                render={({ field }) => (
+                  <Field>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="password">Password</Label>
+                      <Button variant="link" asChild>
+                        <Link to="/auth">Forgot password?</Link>
+                      </Button>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="w-full"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 size-8 rounded-full "
+                        variant="ghost"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={20} color="black" />
+                        ) : (
+                          <Eye size={20} color="black" />
+                        )}
+                      </Button>
+                    </div>
+                    <FieldError
+                      errors={
+                        loginForm.formState.errors.password
+                          ? [loginForm.formState.errors.password]
+                          : undefined
+                      }
+                    />
+                  </Field>
+                )}
+              />
+            </>
+          ) : (
+            <>
+              <Controller
+                control={registerForm.control}
+                name="email"
+                render={({ field }) => (
+                  <Field>
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="alex@example.com"
+                      className="w-full"
+                      {...field}
+                    />
+                    <FieldError
+                      errors={
+                        registerForm.formState.errors.email
+                          ? [registerForm.formState.errors.email]
+                          : undefined
+                      }
+                    />
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={registerForm.control}
+                name="password"
+                render={({ field }) => (
+                  <Field>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="password">Password</Label>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="w-full"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 size-8 rounded-full "
+                        variant="ghost"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={20} color="black" />
+                        ) : (
+                          <Eye size={20} color="black" />
+                        )}
+                      </Button>
+                    </div>
+                    <FieldError
+                      errors={
+                        registerForm.formState.errors.password
+                          ? [registerForm.formState.errors.password]
+                          : undefined
+                      }
+                    />
+                  </Field>
+                )}
+              />
+            </>
+          )}
 
           <Button
             type="submit"
@@ -228,11 +320,13 @@ function RouteComponent() {
             size="lg"
             className="w-full"
           >
-            {isLoading
-              ? "Loading..."
-              : mode === "login"
-                ? "Sign In"
-                : "Create Account"}
+            {isLoading ? (
+              <Spinner />
+            ) : mode === "login" ? (
+              "Sign In"
+            ) : (
+              "Create Account"
+            )}
           </Button>
         </form>
 

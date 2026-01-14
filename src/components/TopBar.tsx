@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, ChevronDown, LogOut, Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
@@ -14,9 +14,27 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import ThemeToggle from "./ThemeToggle";
+import { useUserStore } from "@/store";
+import { redirect } from "@tanstack/react-router";
+import { getCurrentUser } from "@/api/user";
+import { toast } from "sonner";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { setUser, logout, user } = useUserStore();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await getCurrentUser();
+      if (response) {
+        setUser(response);
+      } else {
+        toast.error("Something went wrong. Please login again.");
+        logout();
+        redirect({ to: "/auth" });
+      }
+    };
+    fetchUser();
+  }, []);
   return (
     <div className="flex items-center justify-between py-3 px-6 border-b w-full">
       <InputGroup className="w-md bg-input/40">
@@ -45,7 +63,9 @@ const TopBar = () => {
         <Separator orientation="vertical" />
         <div className="flex items-center gap-1">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage
+              src={user?.logoUrl || "https://github.com/shadcn.png"}
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <DropdownMenu>
@@ -55,13 +75,15 @@ const TopBar = () => {
             <DropdownMenuContent className="w-56 mr-2">
               <DropdownMenuGroup>
                 <DropdownMenuLabel>
-                  <span className="font-medium">John Doe</span>
+                  <span className="font-medium text-accent-foreground">
+                    {user?.fullName}{" "}
+                  </span>
                   <span className="text-xs text-muted-foreground">
-                    john.doe@example.com
+                    {user?.email}
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut size={16} />
                   Sign Out
                 </DropdownMenuItem>
