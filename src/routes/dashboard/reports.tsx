@@ -100,7 +100,6 @@ function RouteComponent() {
               <SelectTrigger className="w-[160px]">
                 <Calendar size={18} className="mr-2" />
                 <SelectValue placeholder="Yearly View" />
-                <ChevronDown size={14} className="ml-auto" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="monthly">Monthly View</SelectItem>

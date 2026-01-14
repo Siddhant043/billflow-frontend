@@ -73,19 +73,19 @@ const AppSidebar = () => {
       </SidebarHeader>
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarMenu>
+          <SidebarMenu className="space-y-2">
             {sidebarItems.map((item) => (
               <SidebarMenuItem
                 key={item.to}
                 className={cn(
                   "p-3 text-muted-foreground hover:bg-primary-foreground hover:text-primary rounded-md",
                   location.pathname === item.to &&
-                    "bg-primary-foreground text-primary"
+                  "bg-primary-foreground text-primary"
                 )}
               >
                 <Link to={item.to} className="flex items-center gap-2">
-                  <item.icon size={22} />
-                  <span className="text-md font-medium">{item.label}</span>
+                  <item.icon size={20} />
+                  <span className="text-sm font-medium">{item.label}</span>
                 </Link>
               </SidebarMenuItem>
             ))}

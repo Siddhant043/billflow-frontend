@@ -1,3 +1,4 @@
+import LandingPage from "@/components/LandingPage";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -11,9 +12,7 @@ function App() {
     const token = localStorage.getItem("token");
     if (token) {
       navigate({ to: "/dashboard" });
-    } else {
-      navigate({ to: "/auth" });
     }
   }, []);
-  return null;
+  return <LandingPage />;
 }
