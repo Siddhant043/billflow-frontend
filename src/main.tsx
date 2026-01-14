@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 
 // Import the generated route tree
@@ -8,6 +9,9 @@ import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
+
+// Create a new query client
+const queryClient = new QueryClient();
 
 // App wrapper to initialize theme
 function App() {
@@ -28,9 +32,9 @@ function App() {
   }, []);
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-    </>
+    </QueryClientProvider>
   );
 }
 

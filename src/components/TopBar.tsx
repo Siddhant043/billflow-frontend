@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, ChevronDown, LogOut, Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
@@ -16,25 +16,26 @@ import {
 import ThemeToggle from "./ThemeToggle";
 import { useUserStore } from "@/store";
 import { redirect } from "@tanstack/react-router";
-import { getCurrentUser } from "@/api/user";
+import { useCurrentUser } from "@/hooks";
 import { toast } from "sonner";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { setUser, logout, user } = useUserStore();
+
+  // Fetch current user with React Query
+  const { data: currentUser, isError } = useCurrentUser();
+
   useEffect(() => {
-    const fetchUser = async () => {
-      const response = await getCurrentUser();
-      if (response) {
-        setUser(response);
-      } else {
-        toast.error("Something went wrong. Please login again.");
-        logout();
-        redirect({ to: "/auth" });
-      }
-    };
-    fetchUser();
-  }, []);
+    if (currentUser) {
+      setUser(currentUser);
+    }
+    if (isError) {
+      toast.error("Something went wrong. Please login again.");
+      logout();
+      redirect({ to: "/auth" });
+    }
+  }, [currentUser, isError, setUser, logout]);
   return (
     <div className="flex items-center justify-between py-3 px-6 border-b w-full">
       <InputGroup className="w-md bg-input/40">

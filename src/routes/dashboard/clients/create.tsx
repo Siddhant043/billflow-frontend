@@ -16,32 +16,34 @@ import {
   FilePlus,
   Camera,
 } from "lucide-react";
+import { useCreateClient } from "@/hooks";
 
 export const Route = createFileRoute("/dashboard/clients/create")({
   component: RouteComponent,
 });
 
 interface ClientFormData {
+  company: string;
   name: string;
-  contactPerson: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   website: string;
   address: string;
-  taxId: string;
+  gstNumber: string;
   notes: string;
 }
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const createClientMutation = useCreateClient();
   const [formData, setFormData] = useState<ClientFormData>({
+    company: "",
     name: "",
-    contactPerson: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     website: "",
     address: "",
-    taxId: "",
+    gstNumber: "",
     notes: "",
   });
 
@@ -57,15 +59,19 @@ function RouteComponent() {
   };
 
   const handleSave = () => {
-    // TODO: Implement save logic
-    console.log("Saving client:", formData);
-    navigate({ to: "/dashboard/clients" });
+    createClientMutation.mutate(formData, {
+      onSuccess: (clientData) => {
+        navigate({ to: `/dashboard/clients/${clientData.id}` });
+      },
+    });
   };
 
   const handleSaveAndCreateInvoice = () => {
-    // TODO: Implement save and create invoice logic
-    console.log("Saving client and creating invoice:", formData);
-    navigate({ to: "/dashboard/clients" });
+    createClientMutation.mutate(formData, {
+      onSuccess: () => {
+        navigate({ to: `/dashboard/invoices/create` });
+      },
+    });
   };
 
   return (
@@ -111,10 +117,10 @@ function RouteComponent() {
                       Company Name *
                     </label>
                     <Input
-                      name="name"
+                      name="company"
                       type="text"
                       placeholder="e.g. Acme Corp"
-                      value={formData.name}
+                      value={formData.company}
                       onChange={handleChange}
                       className="rounded-xl bg-muted/40"
                       required
@@ -125,10 +131,10 @@ function RouteComponent() {
                       Primary Contact Person
                     </label>
                     <Input
-                      name="contactPerson"
+                      name="name"
                       type="text"
                       placeholder="e.g. John Doe"
-                      value={formData.contactPerson}
+                      value={formData.name}
                       onChange={handleChange}
                       className="rounded-xl bg-muted/40"
                     />
@@ -152,10 +158,10 @@ function RouteComponent() {
                       Phone Number
                     </label>
                     <Input
-                      name="phone"
+                      name="phoneNumber"
                       type="tel"
                       placeholder="+1 (555) 000-0000"
-                      value={formData.phone}
+                      value={formData.phoneNumber}
                       onChange={handleChange}
                       className="rounded-xl bg-muted/40"
                     />
@@ -202,13 +208,13 @@ function RouteComponent() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-foreground">
-                        Tax ID / VAT Number
+                        GST Number
                       </label>
                       <Input
-                        name="taxId"
+                        name="gstNumber"
                         type="text"
                         placeholder="e.g. US12345678"
-                        value={formData.taxId}
+                        value={formData.gstNumber}
                         onChange={handleChange}
                         className="rounded-xl bg-muted/40"
                       />
@@ -260,7 +266,7 @@ function RouteComponent() {
                       {formData.name || "New Client"}
                     </h4>
                     <p className="text-xs text-muted-foreground">
-                      {formData.contactPerson || "No contact specified"}
+                      {formData.name || "No contact specified"}
                     </p>
                   </div>
                 </div>
@@ -272,10 +278,10 @@ function RouteComponent() {
                       {formData.email || "No email set"}
                     </span>
                   </div>
-                  {formData.phone && (
+                  {formData.phoneNumber && (
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Phone size={14} className="text-muted-foreground" />
-                      <span>{formData.phone}</span>
+                      <span>{formData.phoneNumber}</span>
                     </div>
                   )}
                   {formData.address && (

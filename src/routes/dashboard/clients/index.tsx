@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MOCK_CLIENTS } from "@/constants";
 import {
   Plus,
   Mail,
@@ -10,6 +9,7 @@ import {
   ArrowRight,
   EllipsisVertical,
 } from "lucide-react";
+import { useClientList } from "@/hooks";
 
 export const Route = createFileRoute("/dashboard/clients/")({
   component: RouteComponent,
@@ -17,6 +17,8 @@ export const Route = createFileRoute("/dashboard/clients/")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { data } = useClientList();
+  console.log(data)
   return (
     <div className="flex flex-col gap-6 px-6 py-6 md:px-10 pb-20">
       {/* Header */}
@@ -40,7 +42,7 @@ function RouteComponent() {
 
       {/* Client grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_CLIENTS.map((client) => (
+        {data?.map((client: any) => (
           <Card
             key={client.id}
             className="rounded-2xl border border-border shadow-xs hover:shadow-md transition-shadow group"
@@ -84,14 +86,14 @@ function RouteComponent() {
                     Total Invoiced
                   </p>
                   <p className="text-sm font-semibold text-foreground">
-                    ₹12,400
+                    ₹{client?.totalInvoiced || 0}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     Outstanding
                   </p>
-                  <p className="text-sm font-semibold text-primary">₹1,200</p>
+                  <p className="text-sm font-semibold text-primary">₹{client?.totalOutstanding || 0}</p>
                 </div>
               </div>
 
@@ -99,7 +101,7 @@ function RouteComponent() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
                   <FileText size={14} />
-                  <span>12 Invoices</span>
+                  <span>{client?.totalNumberOfInvoices || 0} Invoices</span>
                 </div>
                 <button className="text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
                   <span>View Profile</span>

@@ -1,12 +1,12 @@
 import api from "./config";
 import { AUTH_API_URL } from "./config";
 
-interface LoginRequest {
+export interface LoginRequest {
   email: string;
   password: string;
 }
 
-interface RegisterRequest {
+export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;

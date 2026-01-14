@@ -15,8 +15,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import ThemeToggle from "@/components/ThemeToggle";
-import { login as loginApi } from "@/api/auth";
-import { register as registerApi } from "@/api/auth";
+import { useLogin, useRegister } from "@/hooks";
 import { useUserStore } from "@/store";
 import { toast } from "sonner";
 
@@ -46,10 +45,14 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 function RouteComponent() {
   const [mode, setMode] = useState<"login" | "register">("login");
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login, setUser } = useUserStore();
+
+  // TanStack Query mutations
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const isLoading = loginMutation.isPending || registerMutation.isPending;
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -77,36 +80,31 @@ function RouteComponent() {
     }
   };
 
-  const handleLoginSubmit = loginForm.handleSubmit(async (data) => {
-    console.log("Login data:", data);
-    setIsLoading(true);
-    try {
-      // TODO: Implement actual authentication logic
-      console.log("Login data:", data);
-      const response = await loginApi(data);
-      login(response.accessToken);
-      navigate({ to: "/dashboard" });
-    } catch (error) {
-      toast.error("Authentication error. Please try again.");
-      console.error("Authentication error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLoginSubmit = loginForm.handleSubmit((data) => {
+    loginMutation.mutate(data, {
+      onSuccess: (response) => {
+        login(response.accessToken);
+        navigate({ to: "/dashboard" });
+      },
+      onError: (error) => {
+        toast.error("Authentication error. Please try again.");
+        console.error("Authentication error:", error);
+      },
+    });
   });
 
-  const handleRegisterSubmit = registerForm.handleSubmit(async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await registerApi(data);
-      setUser(response.data);
-      toast.success("Account created successfully. Please login.");
-      navigate({ to: "/auth" });
-    } catch (error) {
-      toast.error("Registration error. Please try again.");
-      console.error("Registration error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleRegisterSubmit = registerForm.handleSubmit((data) => {
+    registerMutation.mutate(data, {
+      onSuccess: (response) => {
+        setUser(response.data);
+        toast.success("Account created successfully. Please login.");
+        setMode("login");
+      },
+      onError: (error) => {
+        toast.error("Registration error. Please try again.");
+        console.error("Registration error:", error);
+      },
+    });
   });
 
   const handleSubmit =
